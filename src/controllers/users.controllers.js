@@ -4,14 +4,9 @@ import { findUserByEmailDB, logoutDB, signinDB, signupDB } from "../repositories
 
 
 export async function signup(req, res) {
-  const { email, password, confirmPassword, username, pictureUrl } = req.body;
+  const { email, password, username, pictureUrl } = req.body;
 
   try {
-
-    if(password !== confirmPassword) {
-      return res.status(422).send("As senhas estão diferentes!")
-    }
-
     const existEmail = await findUserByEmailDB(email);
     if (existEmail.rowCount > 0) {
       return res.status(409).send("Este email já existe!");
