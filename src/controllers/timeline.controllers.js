@@ -1,13 +1,13 @@
-import { createPost, deleteLike, insertLike, isLiked } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, insertLike, isLiked, updatePostsDB } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
 
 export async function publishLink(req, res) {
   try {
     const { url, content } = req.body;
 
-    const session = res.locals.rows[0]; 
-    const userId = session.userId; 
-    
+    const session = res.locals.rows[0];
+    const userId = session.userId;
+
     const post = await createPost(url, content, userId);
 
     res.status(201).send("Link publicado com sucesso!");
@@ -17,7 +17,7 @@ export async function publishLink(req, res) {
   }
 }
 
-export async function getAllPosts(req, res){
+export async function getAllPosts(req, res) {
   try {
     const limit = 20;
     const posts = await getPosts(limit);
@@ -34,7 +34,7 @@ export async function like(req, res) {
   try {
     const isLikedPost = await isLiked(userId, postId)
 
-    if(isLikedPost.rows.length === 0){
+    if (isLikedPost.rows.length === 0) {
 
       await insertLike(userId, postId)
       return res.sendStatus(201)
@@ -43,7 +43,22 @@ export async function like(req, res) {
     await deleteLike(userId, postId)
     res.sendStatus(201)
 
-  }catch(err){
+  } catch (err) {
+    return res.status(500).send({ message: err.message });
+  }
+}
+
+export async function updatePosts(req, res) {
+  const {id: postId } = req.params
+  const { content } = req.body
+
+  try {
+    console.log(postId)
+    updatePostsDB(content, postId)
+
+    res.sendStatus(200)
+
+  } catch (err) {
     return res.status(500).send({ message: err.message });
   }
 }

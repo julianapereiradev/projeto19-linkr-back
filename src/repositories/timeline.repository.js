@@ -46,3 +46,11 @@ export async function deleteLike(userId, postId){
     AND "postId" = $2 
   `, [userId, postId])
 }
+
+export async function updatePostsDB(content, postId) {
+  return await db.query(`
+    UPDATE posts
+    SET content = $1
+    WHERE id = $2 
+  `, [content, postId])
+}
