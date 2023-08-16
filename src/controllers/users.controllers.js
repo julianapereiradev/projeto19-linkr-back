@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { findUserByEmailDB, logoutDB, signinDB, signupDB } from "../repositories/users.repositories.js";
+import { findUserByEmailDB, getPictureUrlDB, logoutDB, signinDB, signupDB } from "../repositories/users.repositories.js";
 
 
 export async function signup(req, res) {
@@ -40,7 +40,12 @@ export async function signin(req, res) {
 
       await signinDB(user.rows[0].id, token)
 
-      res.status(200).send({ token: token });
+      const pictureUrl = await getPictureUrlDB(user.rows[0].id)
+
+      const lastPictureUrl = pictureUrl.rows[pictureUrl.rows.length - 1];
+
+      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl });
+
     } else {
       res.status(401).send("Senha incorreta!");
     }
