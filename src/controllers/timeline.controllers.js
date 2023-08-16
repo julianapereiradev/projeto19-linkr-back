@@ -1,5 +1,6 @@
 import { createPost, deleteLike, insertLike, isLiked } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
+import { getUserByIdFromDb } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
   try {
@@ -14,6 +15,20 @@ export async function publishLink(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).send("Houve um erro ao publicar seu link");
+  }
+}
+export async function getUserbyId(req, res) {
+  try {
+    const { userId } = req.body;
+    const user = await getUserByIdFromDb(userId);
+
+    if (!user) {
+      return res.status(404).send({ message: 'Usuário não encontrado.' });
+    }
+    console.log(user);
+    return res.send(user);
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
   }
 }
 
