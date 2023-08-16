@@ -15,3 +15,9 @@ export async function createPost(url, content, userId) {
       console.log(error);
     }
 }
+
+export async function getPosts(limit = 20) {
+    const query = 'SELECT * FROM posts ORDER BY "createdAt" DESC LIMIT $1';
+    const result = await db.query(query, [limit]);
+    return result.rows;
+}
