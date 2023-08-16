@@ -1,4 +1,5 @@
 import { createPost } from "../repositories/timeline.repository.js";
+import { getPosts } from "../repositories/timeline.repository.js";
 
 export async function publishLink(req, res) {
   try {
@@ -13,5 +14,15 @@ export async function publishLink(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).send("Houve um erro ao publicar seu link");
+  }
+}
+
+export async function getAllPosts(req, res){
+  try {
+    const limit = 20;
+    const posts = await getPosts(limit);
+    return res.send(posts);
+  } catch (error) {
+    return res.status(500).send({ message: error.message });
   }
 }
