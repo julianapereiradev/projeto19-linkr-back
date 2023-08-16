@@ -1,4 +1,4 @@
-import { createPost } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, insertLike, isLiked } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
 
 export async function publishLink(req, res) {
@@ -24,5 +24,26 @@ export async function getAllPosts(req, res){
     return res.send(posts);
   } catch (error) {
     return res.status(500).send({ message: error.message });
+  }
+}
+
+export async function like(req, res) {
+  const userId = req.body.userId
+  const postId = req.body.postId
+
+  try {
+    const isLikedPost = await isLiked(userId, postId)
+
+    if(isLikedPost.rows.length === 0){
+
+      await insertLike(userId, postId)
+      return res.sendStatus(201)
+    }
+
+    await deleteLike(userId, postId)
+    res.sendStatus(201)
+
+  }catch(err){
+    return res.status(500).send({ message: err.message });
   }
 }
