@@ -9,7 +9,7 @@ export async function publishLink(req, res) {
     const session = res.locals.rows[0]; 
     const userId = session.userId; 
     
-    const post = await createPost(url, content, userId);
+    await createPost(url, content, userId);
 
     res.status(201).send("Link publicado com sucesso!");
   } catch (err) {
@@ -17,20 +17,20 @@ export async function publishLink(req, res) {
     res.status(500).send("Houve um erro ao publicar seu link");
   }
 }
-export async function getUserbyId(req, res) {
-  try {
-    const { userId } = req.body;
-    const user = await getUserByIdFromDb(userId);
+// export async function getUserbyId(req, res) {
+//   try {
+//     const { userId } = req.body;
+//     const user = await getUserByIdFromDb(userId);
 
-    if (!user) {
-      return res.status(404).send({ message: 'Usuário não encontrado.' });
-    }
-    console.log(user);
-    return res.send(user);
-  } catch (error) {
-    return res.status(500).send({ message: error.message });
-  }
-}
+//     if (!user) {
+//       return res.status(404).send({ message: 'Usuário não encontrado.' });
+//     }
+//     console.log(user);
+//     return res.send(user);
+//   } catch (error) {
+//     return res.status(500).send({ message: error.message });
+//   }
+// }
 
 export async function getAllPosts(req, res){
   try {
