@@ -1,6 +1,6 @@
-import { createPost, deleteLike, getUrlByIdDB, insertLike, isLiked } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
-import { getUserByIdFromDb } from "../repositories/users.repositories.js";
+// import { getUserByIdFromDb } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
   try {
@@ -47,7 +47,7 @@ export async function getAllPostsByUserId(req, res){
 
   try {
    
-    const userIdQuery = await getUrlByIdDB(id)
+    const userIdQuery = await getPostsByIdUserDB(id)
 
     if (userIdQuery.rows.length === 0) {
       return res.status(404).send("Este id não existe no banco de usuários");

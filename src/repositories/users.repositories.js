@@ -23,7 +23,7 @@ export async function signinDB(userId, token) {
 
 export async function getPictureUrlDB(userId) {
   return await db.query(`
-  SELECT sessions."userId", sessions."token", users."pictureUrl" 
+  SELECT sessions."userId", sessions."token", users."pictureUrl", users."username" 
   FROM sessions
   JOIN users ON users.id = sessions."userId"
   WHERE "userId" = $1`, [userId]);

@@ -44,7 +44,9 @@ export async function signin(req, res) {
 
       const lastPictureUrl = pictureUrl.rows[pictureUrl.rows.length - 1];
 
-      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl });
+      const lastUsername = pictureUrl.rows[pictureUrl.rows.length - 1];
+
+      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl, username: lastUsername.username });
 
     } else {
       res.status(401).send("Senha incorreta!");
