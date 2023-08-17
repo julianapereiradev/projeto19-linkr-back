@@ -1,4 +1,4 @@
-import { createPost, deleteLike, insertLike, isLiked } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, getUrlByIdDB, insertLike, isLiked } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
 import { getUserByIdFromDb } from "../repositories/users.repositories.js";
 
@@ -41,6 +41,27 @@ export async function getAllPosts(req, res){
     return res.status(500).send({ message: error.message });
   }
 }
+
+export async function getAllPostsByUserId(req, res){
+  const { id } = req.params;
+
+  try {
+   
+    const userIdQuery = await getUrlByIdDB(id)
+
+    if (userIdQuery.rows.length === 0) {
+      return res.status(404).send("Este id não existe no banco de usuários");
+    }
+
+    const formattedUserId = userIdQuery.rows;
+    res.send(formattedUserId);
+
+  } catch (error) {
+    console.log('Erro em getAllPostsByUserId', error);
+    res.status(500).send(error)
+  }
+}
+
 
 export async function like(req, res) {
   const userId = req.body.userId

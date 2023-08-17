@@ -22,6 +22,11 @@ export async function getPosts(limit = 20) {
     return result.rows;
 }
 
+
+export async function getUrlByIdDB(userId) {
+  return await db.query(`SELECT * FROM posts WHERE posts."userId"=$1`, [userId])
+}
+
 export async function isLiked(userId,postId){
   return db.query(`
     SELECT *
