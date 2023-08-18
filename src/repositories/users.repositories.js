@@ -32,3 +32,7 @@ export async function getPictureUrlDB(userId) {
 export async function logoutDB(token) {
     return await db.query(`DELETE FROM sessions WHERE token =$1`, [token]);
 }
+
+export async function searchByNameDB(name) {
+  return await db.query(`SELECT id, users."username", "pictureUrl" FROM users WHERE LOWER(username) LIKE LOWER($1)`, [`%${name}%`]);
+}
