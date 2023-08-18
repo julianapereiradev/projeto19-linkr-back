@@ -36,3 +36,10 @@ export async function logoutDB(token) {
 export async function searchByNameDB(name) {
   return await db.query(`SELECT id, users."username", "pictureUrl" FROM users WHERE LOWER(username) LIKE LOWER($1)`, [`%${name}%`]);
 }
+
+export async function getIdUserByToken(token){
+  return db.query(`
+  SELECT *
+  FROM sessions 
+  WHERE token =$1`, [token])
+}

@@ -10,7 +10,7 @@ export async function validationAuth(req, res, next) {
 
         res.locals = session
         res.locals.userId = session.rows[0].userId    
-  
+        
         next()
     } catch (error) {
         return res.status(500).send(error.message)

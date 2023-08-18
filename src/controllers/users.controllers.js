@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { findUserByEmailDB, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB } from "../repositories/users.repositories.js";
+import { findUserByEmailDB, getIdUserByToken, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB } from "../repositories/users.repositories.js";
 
 
 export async function signup(req, res) {
@@ -73,7 +73,7 @@ export async function logout(req, res) {
 
 export async function searchByName(req, res) {
 
-  const {name} = req.params
+  const { name } = req.params
 
   try {
     const users = await searchByNameDB(name)
@@ -81,6 +81,21 @@ export async function searchByName(req, res) {
 
   } catch (err) {
     console.log('Erro em searchByName', err);
+    res.status(500).send(err)
+  }
+}
+
+export async function getUserDataByToken(req, res) {
+
+  const token = res.locals.rows[0].token
+
+  try {
+    const {rows: user} = await getIdUserByToken(token)
+    console.log(user)
+    res.status(200).send(user)
+
+  } catch (err) {
+    console.log('Erro em buscar o userId', err);
     res.status(500).send(err)
   }
 }
