@@ -14,6 +14,7 @@ export async function publishLink(req, res) {
     
   } catch (err) {
     console.error(err);
+    alert("Houve um erro ao publicar seu link");
     res.status(500).send("Houve um erro ao publicar seu link");
   }
 }
@@ -38,6 +39,7 @@ export async function getAllPosts(req, res) {
     const posts = await getPosts(limit);
     return res.send(posts);
   } catch (error) {
+    alert("Houve um erro ao buscar os posts");
     return res.status(500).send({ message: error.message });
   }
 }
