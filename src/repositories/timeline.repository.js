@@ -17,9 +17,14 @@ export async function createPost(url, content, userId) {
 }
 
 export async function getPosts(limit = 20) {
-    const query = 'SELECT * FROM posts ORDER BY "createdAt" DESC LIMIT $1';
+    const query = 'SELECT posts.*, users."username", users."pictureUrl" FROM posts JOIN users ON users.id = posts."userId" ORDER BY "createdAt" DESC LIMIT $1';
     const result = await db.query(query, [limit]);
     return result.rows;
+}
+
+
+export async function getPostsByIdUserDB(userId) {
+  return await db.query(`SELECT posts.*, users."username", users."pictureUrl" FROM posts JOIN users ON users.id = posts."userId" WHERE posts."userId"=$1`, [userId])
 }
 
 export async function isLiked(userId,postId){

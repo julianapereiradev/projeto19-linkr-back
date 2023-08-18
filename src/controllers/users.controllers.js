@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { findUserByEmailDB, logoutDB, signinDB, signupDB } from "../repositories/users.repositories.js";
+import { findUserByEmailDB, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB } from "../repositories/users.repositories.js";
 
 
 export async function signup(req, res) {
@@ -40,7 +40,14 @@ export async function signin(req, res) {
 
       await signinDB(user.rows[0].id, token)
 
-      res.status(200).send({ token: token });
+      const pictureUrl = await getPictureUrlDB(user.rows[0].id)
+
+      const lastPictureUrl = pictureUrl.rows[pictureUrl.rows.length - 1];
+
+      const lastUsername = pictureUrl.rows[pictureUrl.rows.length - 1];
+
+      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl, username: lastUsername.username });
+
     } else {
       res.status(401).send("Senha incorreta!");
     }
@@ -60,6 +67,20 @@ export async function logout(req, res) {
 
   } catch (err) {
     console.log('Erro em logout', err);
+    res.status(500).send(err)
+  }
+}
+
+export async function searchByName(req, res) {
+
+  const {name} = req.params
+
+  try {
+    const users = await searchByNameDB(name)
+    return res.send(users.rows)
+
+  } catch (err) {
+    console.log('Erro em searchByName', err);
     res.status(500).send(err)
   }
 }
