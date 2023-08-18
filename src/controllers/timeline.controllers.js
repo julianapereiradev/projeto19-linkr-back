@@ -1,4 +1,4 @@
-import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB } from "../repositories/timeline.repository.js";
 // import { getUserByIdFromDb } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
@@ -184,4 +184,32 @@ export async function getLikes(req, res) {
     return res.status(500).send({ message: err.message });
   }
 
+}
+
+
+export async function deletePostById(req, res) {
+
+  const { id } = req.params; 
+  const session = res.locals;
+
+  try {
+    const isPostQuery = await selectPostByIdDB(id)
+    if (isPostQuery.rows.length === 0) {
+      return res.status(404).send("Este postId não existe no banco de posts");
+    }
+    
+    const userIdFromToken = session.rows[0].userId;
+    const userIdFromParams = isPostQuery.rows[0].userId;
+    
+    if (userIdFromToken !== userIdFromParams) {
+      return res.status(401).send("Você não tem permissão para excluir esta URL.");
+    }
+    
+    await deletePostByIdDB(id)
+    res.sendStatus(204);
+
+  } catch (err) {
+    console.error(err);
+    res.status(500).send("Erro em deletePostById no backend");
+  }
 }
