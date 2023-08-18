@@ -54,3 +54,33 @@ export async function updatePostsDB(content, postId) {
     WHERE id = $2 
   `, [content, postId])
 }
+
+export async function selectLikesDB(postId){
+  return db.query(`
+     SELECT 
+      likes."postId", COUNT("userId")
+    FROM likes
+    WHERE likes."postId" = $1
+    GROUP BY likes."postId"
+  `, [parseInt(postId)])
+}
+
+export async function userLikesDB(postId, userId){
+  return db.query(`
+    SELECT * 
+    FROM likes
+    WHERE likes."postId" = $1
+    AND likes."userId" = $2 
+  `, [parseInt(postId), userId])
+}
+
+export async function whoLikedDB(postId){
+  return db.query(`
+    SELECT
+    users.username, users.id
+    FROM likes
+    JOIN users ON users.id = likes."userId"
+    WHERE likes."postId" = $1
+  `, [parseInt(postId)])
+}
+

@@ -1,4 +1,4 @@
-import { createPost, deleteLike, insertLike, isLiked, updatePostsDB } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB } from "../repositories/timeline.repository.js";
 import { getPosts } from "../repositories/timeline.repository.js";
 
 export async function publishLink(req, res) {
@@ -49,7 +49,7 @@ export async function like(req, res) {
 }
 
 export async function updatePosts(req, res) {
-  const {id: postId } = req.params
+  const { id: postId } = req.params
   const { content } = req.body
 
   try {
@@ -61,4 +61,91 @@ export async function updatePosts(req, res) {
   } catch (err) {
     return res.status(500).send({ message: err.message });
   }
+}
+
+export async function getLikes(req, res) {
+  const { postId } = req.params
+  const userId = res.locals.userId
+  let isLiked = false
+
+  try {
+
+    const likes = await selectLikesDB(postId)
+    const userLikes = await userLikesDB(postId, userId)
+    const whoLiked = await whoLikedDB(postId)
+
+    if (likes.rows.length === 0) {
+      return res.send([{
+        postId: parseInt(postId),
+        count: 0,
+        isLiked: isLiked,
+        whoLiked: `Seja o primeiro <br> a curtir!`
+      }])
+    }
+
+    if (whoLiked.rows.length === 1) {
+      if (userLikes.rows.length !== 0) {
+        isLiked = true
+        likes.rows[0].isLiked = isLiked
+        likes.rows[0].whoLiked = 'Você'
+
+        return res.send(likes.rows)
+      } else {
+        likes.rows[0].isLiked = isLiked
+        likes.rows[0].whoLiked = `${whoLiked.rows[0].username}`
+
+        return res.send(likes.rows)
+      }
+    }
+
+    if (whoLiked.rows.length === 2) {
+      if (userLikes.rows.length !== 0) {
+        isLiked = true
+        likes.rows[0].isLiked = isLiked
+
+        let other
+        if (whoLiked.rows[0].id === userId) {
+          other = whoLiked.rows[1].username
+        } else {
+          other = whoLiked.rows[0].username
+        }
+
+        likes.rows[0].whoLiked = `Você e ${other}`
+
+        return res.send(likes.rows)
+      } else {
+        likes.rows[0].isLiked = isLiked
+        likes.rows[0].whoLiked = `${whoLiked.rows[0].username} e ${whoLiked.rows[1].username}`
+
+        return res.send(likes.rows)
+      }
+    }
+
+    if (whoLiked.rows.length > 2) {
+      if (userLikes.rows.length !== 0) {
+        isLiked = true
+        likes.rows[0].isLiked = isLiked
+
+        let other
+        if (whoLiked.rows[0].id === userId) {
+          other = whoLiked.rows[1].username
+        } else {
+          other = whoLiked.rows[0].username
+        }
+
+        likes.rows[0].whoLiked = `Você, ${other} e outras ${parseInt(likes.rows[0].count) - 2} pessoas`
+
+        return res.send(likes.rows)
+      } else {
+        likes.rows[0].isLiked = isLiked
+        likes.rows[0].whoLiked = `${whoLiked.rows[0].username}, ${whoLiked.rows[1].username} e outras ${parseInt(likes.rows[0].count) - 2} pessoas`
+
+        return res.send(likes.rows)
+      }
+    }
+
+  } catch (err) {
+    return res.status(500).send({ message: err.message });
+  }
+
 }
