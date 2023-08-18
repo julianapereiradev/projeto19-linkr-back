@@ -89,3 +89,10 @@ export async function whoLikedDB(postId){
   `, [parseInt(postId)])
 }
 
+export async function selectPostByIdDB(id) {
+  return await db.query(`SELECT * FROM posts WHERE id=$1`, [id]);
+}
+
+export async function deletePostByIdDB(id) {   
+  return await db.query(`DELETE FROM posts WHERE id=$1`, [id]);
+}
