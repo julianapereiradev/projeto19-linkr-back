@@ -24,7 +24,7 @@ export async function getPosts(limit = 20) {
 
 
 export async function getPostsByIdUserDB(userId) {
-  return await db.query(`SELECT posts.*, users."username", users."pictureUrl" FROM posts JOIN users ON users.id = posts."userId" WHERE posts."userId"=$1`, [userId])
+  return await db.query(`SELECT users."username", users."pictureUrl", posts.* FROM users LEFT JOIN posts ON users.id = posts."userId" WHERE users.id =$1;`, [userId])
 }
 
 export async function isLiked(userId,postId){

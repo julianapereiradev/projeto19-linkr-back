@@ -49,9 +49,9 @@ export async function getAllPostsByUserId(req, res){
    
     const userIdQuery = await getPostsByIdUserDB(id)
 
-    // if (userIdQuery.rows.length === 0) {
-    //   return res.status(404).send("Este id não existe no banco de usuários");
-    // }
+    if (userIdQuery.rows.length === 0) {
+      return res.status(404).send("Este id não existe no banco de usuários");
+    }
 
     const formattedUserId = userIdQuery.rows;
     res.send(formattedUserId);
