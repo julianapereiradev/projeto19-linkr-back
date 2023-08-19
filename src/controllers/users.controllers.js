@@ -91,7 +91,6 @@ export async function getUserDataByToken(req, res) {
 
   try {
     const {rows: user} = await getIdUserByToken(token)
-    console.log(user)
     res.status(200).send(user)
 
   } catch (err) {

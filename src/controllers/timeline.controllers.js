@@ -89,7 +89,6 @@ export async function updatePosts(req, res) {
   const { content } = req.body
 
   try {
-    console.log(postId)
     updatePostsDB(content, postId)
 
     res.sendStatus(200)
@@ -115,7 +114,7 @@ export async function getLikes(req, res) {
         postId: parseInt(postId),
         count: 0,
         isLiked: isLiked,
-        whoLiked: `Seja o primeiro <br> a curtir!`
+        whoLiked: `Seja o primeiro a curtir!`
       }])
     }
 
