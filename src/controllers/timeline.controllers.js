@@ -87,11 +87,11 @@ export async function like(req, res) {
 }
 
 export async function updatePosts(req, res) {
-  const { id: postId } = req.params
+  const { id } = req.params
   const { content } = req.body
 
   try {
-    updatePostsDB(content, postId)
+    updatePostsDB(content, id)
 
     res.sendStatus(200)
 
