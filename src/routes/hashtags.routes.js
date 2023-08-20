@@ -4,7 +4,7 @@ import { getHashtagPosts, getTrendingHashtags } from "../controllers/hashtags.co
 
 const hashtagRouter = Router();
 
-hashtagRouter.get("/hashtag/:hashtag", getHashtagPosts);
-hashtagRouter.get("/trending", getTrendingHashtags);
+hashtagRouter.get("/hashtag/:hashtag", validationAuth, getHashtagPosts);
+hashtagRouter.get("/trending", validationAuth, getTrendingHashtags);
 
 export default hashtagRouter;

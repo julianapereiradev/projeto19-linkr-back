@@ -1,11 +1,11 @@
-import { getTrendingHashtagsDB, getHashtagPostsDB, getPostsById } from "../repositories/hashtags.repositories.js";
+import { getTrendingHashtagsDB, getHashtagPostsDB, getUserInfoDB } from "../repositories/hashtags.repositories.js";
 
 export async function getTrendingHashtags(req, res) {
   try {
     const hashtags = await getTrendingHashtagsDB();
-    res.status(200).send(hashtags);
+    res.status(200).send(hashtags.rows);
   } catch (err) {
-    return res.status(500).send(err);
+    return res.status(500).send({ message: err.message });
   }
 }
 
@@ -13,13 +13,28 @@ export async function getHashtagPosts(req, res) {
   const { hashtag } = req.params;
 
   try {
-    const { rows: ids} = await getHashtagPostsDB(hashtag);
-    const idsArr = ids.map(function (obj) { 
-      return obj.id;
-    });
-    const {rows: [posts] } = await getPostsById(idsArr);
-    res.status(200).send(posts);
+    const infos = await getHashtagPostsDB(hashtag);
+    let str = "";
+    for (let i = 0; i < infos.rows.length; i++) {
+      str += infos.rows[i].userId;
+      str += ", ";
+    }
+    str = str.slice(0, -2);
+    const users = await getUserInfoDB(str);
+    let arr = [];
+    for (let i = 0; i < users.rows.length; i++) {
+      let obj = {
+        id: infos.rows[i].id,
+        userId: infos.rows[i].userId,
+        username: users.rows[i].username,
+        pictureUrl: users.rows[i].pictureUrl,
+        content: infos.rows[i].content,
+        url: infos.rows[i].url
+      }
+      arr.push(obj);
+    }
+    res.status(200).send(arr);
   } catch (err) {
-    return res.status(500).send(err);
+    return res.status(500).send({ message: err.message });
   }
 }

@@ -7,9 +7,18 @@ export async function publishLink(req, res) {
     const { url, content } = req.body;
 
     const session = res.locals.rows[0]; 
-    const userId = session.userId; 
+    const userId = session.userId;
+
+    let hashtags = "";
+    const contentSplit = content.split(" ");
+    contentSplit.map((word, i) => {
+      if (word[0] === "#") {
+        hashtags += word.replace("#", "");
+        hashtags += " ";
+      }
+    });
     
-    const post = await createPost(url, content, userId);
+    const post = await createPost(url, content, userId, hashtags);
 
     res.status(201).send("Link publicado com sucesso!");
   } catch (err) {
