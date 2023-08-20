@@ -96,12 +96,21 @@ export async function like(req, res) {
 }
 
 export async function updatePosts(req, res) {
-  const { id } = req.params
-  const { content } = req.body
-
+  const { id } = req.params;
+  const { content } = req.body;
+  const session = res.locals;
+  
   try {
-    updatePostsDB(content, id)
-
+    const post = await selectPostByIdDB(id); 
+    if (post.rows.length === 0) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+    const idSessions = session.rows[0].userId;
+    const idPosts = post.rows[0].userId;
+    if (idSessions !== idPosts) {
+      return res.status(403).send('Você não pode editar esse post');
+    }
+    await updatePostsDB(content, id)
     res.sendStatus(200)
 
   } catch (err) {
