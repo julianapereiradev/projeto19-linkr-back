@@ -7,7 +7,7 @@ import { getAllPosts, getUserbyId } from "../controllers/timeline.controllers.js
 
 const timelineRouter = Router();
 
-timelineRouter.post("/timeline",  validationSchema(publishSchema), publishLink);
+timelineRouter.post("/timeline", validationAuth, validationSchema(publishSchema), publishLink);
 timelineRouter.get("/timeline", validationAuth, getAllPosts);
 timelineRouter.post("/timeline/user", validationAuth, getUserbyId);
 timelineRouter.post("/like", like)
