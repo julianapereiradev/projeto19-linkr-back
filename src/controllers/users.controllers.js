@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { findUserByEmailDB, getPictureUrlDB, logoutDB, signinDB, signupDB } from "../repositories/users.repositories.js";
+import { findUserByEmailDB, getIdUserByToken, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB } from "../repositories/users.repositories.js";
 
 
 export async function signup(req, res) {
@@ -44,7 +44,9 @@ export async function signin(req, res) {
 
       const lastPictureUrl = pictureUrl.rows[pictureUrl.rows.length - 1];
 
-      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl });
+      const lastUsername = pictureUrl.rows[pictureUrl.rows.length - 1];
+
+      res.status(200).send({ token: token, pictureUrl: lastPictureUrl.pictureUrl, username: lastUsername.username });
 
     } else {
       res.status(401).send("Senha incorreta!");
@@ -65,6 +67,34 @@ export async function logout(req, res) {
 
   } catch (err) {
     console.log('Erro em logout', err);
+    res.status(500).send(err)
+  }
+}
+
+export async function searchByName(req, res) {
+
+  const { name } = req.params
+
+  try {
+    const users = await searchByNameDB(name)
+    return res.send(users.rows)
+
+  } catch (err) {
+    console.log('Erro em searchByName', err);
+    res.status(500).send(err)
+  }
+}
+
+export async function getUserDataByToken(req, res) {
+
+  const token = res.locals.rows[0].token
+
+  try {
+    const {rows: user} = await getIdUserByToken(token)
+    res.status(200).send(user)
+
+  } catch (err) {
+    console.log('Erro em buscar o userId', err);
     res.status(500).send(err)
   }
 }

@@ -23,7 +23,7 @@ export async function signinDB(userId, token) {
 
 export async function getPictureUrlDB(userId) {
   return await db.query(`
-  SELECT sessions."userId", sessions."token", users."pictureUrl" 
+  SELECT sessions."userId", sessions."token", users."pictureUrl", users."username" 
   FROM sessions
   JOIN users ON users.id = sessions."userId"
   WHERE "userId" = $1`, [userId]);
@@ -31,4 +31,15 @@ export async function getPictureUrlDB(userId) {
 
 export async function logoutDB(token) {
     return await db.query(`DELETE FROM sessions WHERE token =$1`, [token]);
+}
+
+export async function searchByNameDB(name) {
+  return await db.query(`SELECT id, users."username", "pictureUrl" FROM users WHERE LOWER(username) LIKE LOWER($1)`, [`%${name}%`]);
+}
+
+export async function getIdUserByToken(token){
+  return db.query(`
+  SELECT *
+  FROM sessions 
+  WHERE token =$1`, [token])
 }
