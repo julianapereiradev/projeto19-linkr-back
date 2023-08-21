@@ -2,8 +2,10 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.4 (Ubuntu 15.4-1.pgdg22.04+1)
--- Dumped by pg_dump version 15.4 (Ubuntu 15.4-1.pgdg22.04+1)
+-- Dumped from database version 14.9 (Ubuntu 14.9-0ubuntu0.22.04.1)
+-- Dumped by pg_dump version 14.9 (Ubuntu 14.9-0ubuntu0.22.04.1)
+
+-- Started on 2023-08-20 20:25:17 -03
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -21,48 +23,19 @@ SET default_tablespace = '';
 SET default_table_access_method = heap;
 
 --
--- Name: hashtags; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.hashtags (
-    id integer NOT NULL,
-    hashtag character varying
-);
-
-
---
--- Name: hashtags_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.hashtags_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: hashtags_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.hashtags_id_seq OWNED BY public.hashtags.id;
-
-
---
+-- TOC entry 216 (class 1259 OID 49229)
 -- Name: likes; Type: TABLE; Schema: public; Owner: -
 --
 
 CREATE TABLE public.likes (
     id integer NOT NULL,
     "userId" integer NOT NULL,
-    "postId" integer NOT NULL,
-    "likesCount" integer DEFAULT 0 NOT NULL
+    "postId" integer NOT NULL
 );
 
 
 --
+-- TOC entry 215 (class 1259 OID 49228)
 -- Name: likes_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -76,6 +49,8 @@ CREATE SEQUENCE public.likes_id_seq
 
 
 --
+-- TOC entry 3387 (class 0 OID 0)
+-- Dependencies: 215
 -- Name: likes_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -83,37 +58,7 @@ ALTER SEQUENCE public.likes_id_seq OWNED BY public.likes.id;
 
 
 --
--- Name: posthashtag; Type: TABLE; Schema: public; Owner: -
---
-
-CREATE TABLE public.posthashtag (
-    id integer NOT NULL,
-    "postId" integer NOT NULL,
-    "hashtagId" integer NOT NULL
-);
-
-
---
--- Name: posthashtag_id_seq; Type: SEQUENCE; Schema: public; Owner: -
---
-
-CREATE SEQUENCE public.posthashtag_id_seq
-    AS integer
-    START WITH 1
-    INCREMENT BY 1
-    NO MINVALUE
-    NO MAXVALUE
-    CACHE 1;
-
-
---
--- Name: posthashtag_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
---
-
-ALTER SEQUENCE public.posthashtag_id_seq OWNED BY public.posthashtag.id;
-
-
---
+-- TOC entry 214 (class 1259 OID 49214)
 -- Name: posts; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -122,11 +67,13 @@ CREATE TABLE public.posts (
     content text NOT NULL,
     "userId" integer NOT NULL,
     url text NOT NULL,
+    hashtags text,
     "createdAt" timestamp without time zone DEFAULT now()
 );
 
 
 --
+-- TOC entry 213 (class 1259 OID 49213)
 -- Name: posts_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -140,6 +87,8 @@ CREATE SEQUENCE public.posts_id_seq
 
 
 --
+-- TOC entry 3388 (class 0 OID 0)
+-- Dependencies: 213
 -- Name: posts_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -147,6 +96,7 @@ ALTER SEQUENCE public.posts_id_seq OWNED BY public.posts.id;
 
 
 --
+-- TOC entry 212 (class 1259 OID 49200)
 -- Name: sessions; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -158,6 +108,7 @@ CREATE TABLE public.sessions (
 
 
 --
+-- TOC entry 211 (class 1259 OID 49199)
 -- Name: sessions_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -171,6 +122,8 @@ CREATE SEQUENCE public.sessions_id_seq
 
 
 --
+-- TOC entry 3389 (class 0 OID 0)
+-- Dependencies: 211
 -- Name: sessions_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -178,6 +131,7 @@ ALTER SEQUENCE public.sessions_id_seq OWNED BY public.sessions.id;
 
 
 --
+-- TOC entry 210 (class 1259 OID 49189)
 -- Name: users; Type: TABLE; Schema: public; Owner: -
 --
 
@@ -191,6 +145,7 @@ CREATE TABLE public.users (
 
 
 --
+-- TOC entry 209 (class 1259 OID 49188)
 -- Name: users_id_seq; Type: SEQUENCE; Schema: public; Owner: -
 --
 
@@ -204,6 +159,8 @@ CREATE SEQUENCE public.users_id_seq
 
 
 --
+-- TOC entry 3390 (class 0 OID 0)
+-- Dependencies: 209
 -- Name: users_id_seq; Type: SEQUENCE OWNED BY; Schema: public; Owner: -
 --
 
@@ -211,13 +168,7 @@ ALTER SEQUENCE public.users_id_seq OWNED BY public.users.id;
 
 
 --
--- Name: hashtags id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.hashtags ALTER COLUMN id SET DEFAULT nextval('public.hashtags_id_seq'::regclass);
-
-
---
+-- TOC entry 3228 (class 2604 OID 49232)
 -- Name: likes id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -225,13 +176,7 @@ ALTER TABLE ONLY public.likes ALTER COLUMN id SET DEFAULT nextval('public.likes_
 
 
 --
--- Name: posthashtag id; Type: DEFAULT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.posthashtag ALTER COLUMN id SET DEFAULT nextval('public.posthashtag_id_seq'::regclass);
-
-
---
+-- TOC entry 3226 (class 2604 OID 49217)
 -- Name: posts id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -239,6 +184,7 @@ ALTER TABLE ONLY public.posts ALTER COLUMN id SET DEFAULT nextval('public.posts_
 
 
 --
+-- TOC entry 3225 (class 2604 OID 49203)
 -- Name: sessions id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -246,6 +192,7 @@ ALTER TABLE ONLY public.sessions ALTER COLUMN id SET DEFAULT nextval('public.ses
 
 
 --
+-- TOC entry 3224 (class 2604 OID 49192)
 -- Name: users id; Type: DEFAULT; Schema: public; Owner: -
 --
 
@@ -253,92 +200,7 @@ ALTER TABLE ONLY public.users ALTER COLUMN id SET DEFAULT nextval('public.users_
 
 
 --
--- Data for Name: hashtags; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: likes; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: posthashtag; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: posts; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: sessions; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Data for Name: users; Type: TABLE DATA; Schema: public; Owner: -
---
-
-
-
---
--- Name: hashtags_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.hashtags_id_seq', 1, false);
-
-
---
--- Name: likes_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.likes_id_seq', 1, false);
-
-
---
--- Name: posthashtag_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.posthashtag_id_seq', 1, false);
-
-
---
--- Name: posts_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.posts_id_seq', 1, false);
-
-
---
--- Name: sessions_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.sessions_id_seq', 1, false);
-
-
---
--- Name: users_id_seq; Type: SEQUENCE SET; Schema: public; Owner: -
---
-
-SELECT pg_catalog.setval('public.users_id_seq', 1, false);
-
-
---
--- Name: hashtags hashtags_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.hashtags
-    ADD CONSTRAINT hashtags_pkey PRIMARY KEY (id);
-
-
---
+-- TOC entry 3238 (class 2606 OID 49234)
 -- Name: likes likes_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -347,14 +209,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
--- Name: posthashtag posthashtag_pkey; Type: CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.posthashtag
-    ADD CONSTRAINT posthashtag_pkey PRIMARY KEY (id);
-
-
---
+-- TOC entry 3236 (class 2606 OID 49222)
 -- Name: posts posts_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -363,6 +218,7 @@ ALTER TABLE ONLY public.posts
 
 
 --
+-- TOC entry 3234 (class 2606 OID 49207)
 -- Name: sessions sessions_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -371,6 +227,7 @@ ALTER TABLE ONLY public.sessions
 
 
 --
+-- TOC entry 3230 (class 2606 OID 49198)
 -- Name: users users_email_key; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -379,6 +236,7 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- TOC entry 3232 (class 2606 OID 49196)
 -- Name: users users_pkey; Type: CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -387,6 +245,7 @@ ALTER TABLE ONLY public.users
 
 
 --
+-- TOC entry 3242 (class 2606 OID 49240)
 -- Name: likes likes_postId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -395,6 +254,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
+-- TOC entry 3241 (class 2606 OID 49235)
 -- Name: likes likes_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -403,22 +263,7 @@ ALTER TABLE ONLY public.likes
 
 
 --
--- Name: posthashtag posthashtag_hashtagId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.posthashtag
-    ADD CONSTRAINT "posthashtag_hashtagId_fkey" FOREIGN KEY ("hashtagId") REFERENCES public.hashtags(id);
-
-
---
--- Name: posthashtag posthashtag_postId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
---
-
-ALTER TABLE ONLY public.posthashtag
-    ADD CONSTRAINT "posthashtag_postId_fkey" FOREIGN KEY ("postId") REFERENCES public.posts(id);
-
-
---
+-- TOC entry 3240 (class 2606 OID 49223)
 -- Name: posts posts_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
@@ -427,12 +272,15 @@ ALTER TABLE ONLY public.posts
 
 
 --
+-- TOC entry 3239 (class 2606 OID 49208)
 -- Name: sessions sessions_userId_fkey; Type: FK CONSTRAINT; Schema: public; Owner: -
 --
 
 ALTER TABLE ONLY public.sessions
     ADD CONSTRAINT "sessions_userId_fkey" FOREIGN KEY ("userId") REFERENCES public.users(id);
 
+
+-- Completed on 2023-08-20 20:25:17 -03
 
 --
 -- PostgreSQL database dump complete
