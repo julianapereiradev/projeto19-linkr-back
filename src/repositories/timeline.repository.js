@@ -1,13 +1,13 @@
 import { db } from "../database/database.js";
 
-export async function createPost(url, content, userId) {
+export async function createPost(url, content, userId, hashtags) {
     const query = `
       INSERT INTO posts
-      (url, content, "userId")
-      VALUES ($1, $2, $3)
+      (url, content, "userId", hashtags)
+      VALUES ($1, $2, $3, $4)
       RETURNING *;
     `;
-    const values = [url, content, userId];
+    const values = [url, content, userId, hashtags];
     try {
       const result = await db.query(query, values);
       return result.rows[0];
