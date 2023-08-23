@@ -43,3 +43,24 @@ export async function getIdUserByToken(token){
   FROM sessions 
   WHERE token =$1`, [token])
 }
+
+export async function isFollowingDB(followerId, followingId) {
+  return db.query(`
+    SELECT * FROM follows
+      WHERE "followerId"=$1 AND "followingId"=$2;`, [followerId, followingId]
+  );
+}
+
+export async function followDB(followerId, followingId) {
+  return db.query(`
+    INSERT INTO follows ("followerId", "followingId")
+      VALUES ($1, $2);`, [followerId, followingId]
+  );
+}
+
+export async function unfollowDB(followerId, followingId) {
+  return db.query(`
+    DELETE FROM follows
+      WHERE "followerId"=$1 AND "followingId"=$2;`, [followerId, followingId]
+  );
+}

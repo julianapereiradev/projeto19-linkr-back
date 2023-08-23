@@ -1,5 +1,6 @@
 import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB } from "../repositories/timeline.repository.js";
 // import { getUserByIdFromDb } from "../repositories/users.repositories.js";
+import { isFollowingDB } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
   try {
@@ -55,9 +56,11 @@ export async function getAllPosts(req, res) {
 
 export async function getAllPostsByUserId(req, res){
   const { id } = req.params;
+  const session = res.locals.rows[0];
+  const follower  = session.userId;
 
   try {
-   
+    
     const userIdQuery = await getPostsByIdUserDB(id)
 
     if (userIdQuery.rows.length === 0) {
@@ -65,6 +68,22 @@ export async function getAllPostsByUserId(req, res){
     }
 
     const formattedUserId = userIdQuery.rows;
+
+    const checkIsFollowing = await isFollowingDB(follower, id);
+
+    let isFollowing = false;
+
+    if (checkIsFollowing.rowCount)
+      isFollowing = true;
+
+
+    const posts = {
+      isFollowing: isFollowing,
+      posts: [
+        formattedUserId
+      ]
+    }
+    console.log(posts);
     res.send(formattedUserId);
 
   } catch (error) {

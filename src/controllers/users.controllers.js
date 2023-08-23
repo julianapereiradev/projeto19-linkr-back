@@ -1,6 +1,6 @@
 import bcrypt from "bcrypt";
 import { v4 as uuid } from "uuid";
-import { findUserByEmailDB, getIdUserByToken, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB } from "../repositories/users.repositories.js";
+import { findUserByEmailDB, getIdUserByToken, getPictureUrlDB, logoutDB, searchByNameDB, signinDB, signupDB, isFollowingDB, followDB, unfollowDB } from "../repositories/users.repositories.js";
 
 
 export async function signup(req, res) {
@@ -95,6 +95,30 @@ export async function getUserDataByToken(req, res) {
 
   } catch (err) {
     console.log('Erro em buscar o userId', err);
+    res.status(500).send({ message: err })
+  }
+}
+
+export async function followUser(req, res) {
+  const { following } = req.params;
+  const session = res.locals;
+  const follower = session.rows[0].userId;
+
+  try {
+    const isFollowing = await isFollowingDB(follower, following);
+    let final = "followed";
+
+    if (!isFollowing.rowCount) {
+      await followDB(follower, following);
+    } else {
+      await unfollowDB(follower, following);
+      final = "unfollowed";
+    }
+
+    res.status(200).send(final);
+
+  } catch (err) {
+    console.log('Erro em followUser', err);
     res.status(500).send(err)
   }
 }
