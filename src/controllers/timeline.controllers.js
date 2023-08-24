@@ -45,6 +45,7 @@ export async function publishLink(req, res) {
 
 export async function getAllPosts(req, res) {
   const userId = res.locals.userId;
+  const { offset } = req.query;
 
   try {
     const followedUsers = await getFollowedUsersDB(userId);
@@ -55,8 +56,8 @@ export async function getAllPosts(req, res) {
     }
     str = str.slice(0, -2);
     
-    const limit = 20;
-    const posts = await getPosts(limit, str);
+    const limit = 10;
+    const posts = await getPosts(limit, offset, str);
     return res.send(posts);
   } catch (error) {
     //alert("Houve um erro ao buscar os posts");
@@ -81,10 +82,10 @@ export async function getAllPostsByUserId(req, res){
 
     const checkIsFollowing = await isFollowingDB(followerId, id);
 
-    let isFollowing = 0;
+    let isFollowing = "yes";
 
-    if (checkIsFollowing.rowCount)
-      isFollowing = 1;
+    if (checkIsFollowing.rowCount === 0)
+      isFollowing = "no";
 
 
     const posts = {
@@ -101,7 +102,6 @@ export async function getAllPostsByUserId(req, res){
     res.status(500).send(error)
   }
 }
-
 
 export async function like(req, res) {
   const userId = req.body.userId

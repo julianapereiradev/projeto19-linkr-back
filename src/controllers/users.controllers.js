@@ -111,7 +111,7 @@ export async function getUserDataByToken(req, res) {
 }
 
 export async function followUser(req, res) {
-  const { followerId, followingId }  = req.body;
+  const { followerId, followingId } = req.body;
  
   try {
     const isFollowing = await isFollowingDB(followerId, followingId);
@@ -127,8 +127,6 @@ export async function followUser(req, res) {
     }
 
     res.status(200).send(final);
-    
-   res.sendStatus(200)
 
   } catch (err) {
     console.log('Erro em followUser', err);
