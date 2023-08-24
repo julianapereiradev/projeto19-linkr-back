@@ -1,6 +1,6 @@
 import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB } from "../repositories/timeline.repository.js";
 // import { getUserByIdFromDb } from "../repositories/users.repositories.js";
-import { isFollowingDB } from "../repositories/users.repositories.js";
+import { isFollowingDB, getFollowedUsersDB } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
   try {
@@ -44,12 +44,22 @@ export async function publishLink(req, res) {
 // }
 
 export async function getAllPosts(req, res) {
+  const userId = res.locals.userId;
+
   try {
+    const followedUsers = await getFollowedUsersDB(userId);
+    let str = "";
+    for (let i = 0; i < followedUsers.rows.length; i++) {
+      str += followedUsers.rows[i].followingId;
+      str += ", ";
+    }
+    str = str.slice(0, -2);
+    
     const limit = 20;
-    const posts = await getPosts(limit);
+    const posts = await getPosts(limit, str);
     return res.send(posts);
   } catch (error) {
-    alert("Houve um erro ao buscar os posts");
+    //alert("Houve um erro ao buscar os posts");
     return res.status(500).send({ message: error.message });
   }
 }
@@ -57,7 +67,7 @@ export async function getAllPosts(req, res) {
 export async function getAllPostsByUserId(req, res){
   const { id } = req.params;
   const session = res.locals.rows[0];
-  const follower  = session.userId;
+  const followerId  = session.userId;
 
   try {
     
@@ -69,22 +79,22 @@ export async function getAllPostsByUserId(req, res){
 
     const formattedUserId = userIdQuery.rows;
 
-    const checkIsFollowing = await isFollowingDB(follower, id);
+    const checkIsFollowing = await isFollowingDB(followerId, id);
 
-    let isFollowing = false;
+    let isFollowing = 0;
 
     if (checkIsFollowing.rowCount)
-      isFollowing = true;
+      isFollowing = 1;
 
 
     const posts = {
-      isFollowing: isFollowing,
+      isFollowing,
       posts: [
-        formattedUserId
+        ...formattedUserId
       ]
     }
-    console.log(posts);
-    res.send(formattedUserId);
+
+    res.send(posts);
 
   } catch (error) {
     console.log('Erro em getAllPostsByUserId', error);
