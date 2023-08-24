@@ -5,7 +5,7 @@ export async function getTrendingHashtags(req, res) {
     const hashtags = await getTrendingHashtagsDB();
     res.status(200).send(hashtags.rows);
   } catch (err) {
-    return res.status(500).send({ message: err.message });
+    return res.status(500).send({ message: err });
   }
 }
 
@@ -35,6 +35,6 @@ export async function getHashtagPosts(req, res) {
     }
     res.status(200).send(arr);
   } catch (err) {
-    return res.status(500).send({ message: err.message });
+    return res.status(500).send({ message: err });
   }
 }

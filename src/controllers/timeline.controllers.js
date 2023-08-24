@@ -1,5 +1,6 @@
 import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB } from "../repositories/timeline.repository.js";
 // import { getUserByIdFromDb } from "../repositories/users.repositories.js";
+import { isFollowingDB, getFollowedUsersDB } from "../repositories/users.repositories.js";
 
 export async function publishLink(req, res) {
   try {
@@ -43,23 +44,34 @@ export async function publishLink(req, res) {
 // }
 
 export async function getAllPosts(req, res) {
+  const userId = res.locals.userId;
   const { offset } = req.query;
 
   try {
+    const followedUsers = await getFollowedUsersDB(userId);
+    let str = "";
+    for (let i = 0; i < followedUsers.rows.length; i++) {
+      str += followedUsers.rows[i].followingId;
+      str += ", ";
+    }
+    str = str.slice(0, -2);
+    
     const limit = 10;
-    const posts = await getPosts(limit, offset);
+    const posts = await getPosts(limit, offset, str);
     return res.send(posts);
   } catch (error) {
-    alert("Houve um erro ao buscar os posts");
+    //alert("Houve um erro ao buscar os posts");
     return res.status(500).send({ message: error.message });
   }
 }
 
 export async function getAllPostsByUserId(req, res){
   const { id } = req.params;
+  const session = res.locals.rows[0];
+  const followerId  = session.userId;
 
   try {
-   
+    
     const userIdQuery = await getPostsByIdUserDB(id)
 
     if (userIdQuery.rows.length === 0) {
@@ -67,7 +79,23 @@ export async function getAllPostsByUserId(req, res){
     }
 
     const formattedUserId = userIdQuery.rows;
-    res.send(formattedUserId);
+
+    const checkIsFollowing = await isFollowingDB(followerId, id);
+
+    let isFollowing = "yes";
+
+    if (checkIsFollowing.rowCount === 0)
+      isFollowing = "no";
+
+
+    const posts = {
+      isFollowing,
+      posts: [
+        ...formattedUserId
+      ]
+    }
+
+    res.send(posts);
 
   } catch (error) {
     console.log('Erro em getAllPostsByUserId', error);

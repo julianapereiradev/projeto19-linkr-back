@@ -33,8 +33,12 @@ export async function logoutDB(token) {
     return await db.query(`DELETE FROM sessions WHERE token =$1`, [token]);
 }
 
-export async function searchByNameDB(name) {
-  return await db.query(`SELECT id, users."username", "pictureUrl" FROM users WHERE LOWER(username) LIKE LOWER($1)`, [`%${name}%`]);
+export async function searchByNameDB(name, str) {
+  return await db.query(`
+    SELECT id, users."username", "pictureUrl"
+      FROM users
+      WHERE LOWER(username) LIKE LOWER($1)
+      ORDER BY (CASE WHEN id IN ($2) THEN 1 ELSE 2 END);`, [`%${name}%`, str]);
 }
 
 export async function getIdUserByToken(token){
@@ -42,4 +46,32 @@ export async function getIdUserByToken(token){
   SELECT *
   FROM sessions 
   WHERE token =$1`, [token])
+}
+
+export async function isFollowingDB(followerId, followingId) {
+  return db.query(`
+    SELECT * FROM follows
+      WHERE "followerId"=$1 AND "followingId"=$2;`, [followerId, followingId]
+  );
+}
+
+export async function followDB(followerId, followingId) {
+  return db.query(`
+    INSERT INTO follows ("followerId", "followingId")
+      VALUES ($1, $2);`, [followerId, followingId]
+  );
+}
+
+export async function unfollowDB(followerId, followingId) {
+  return db.query(`
+    DELETE FROM follows
+      WHERE "followerId"=$1 AND "followingId"=$2;`, [followerId, followingId]
+  );
+}
+
+export async function getFollowedUsersDB(followerId) {
+  return db.query(`
+    SELECT "followingId" FROM follows
+      WHERE "followerId"=$1`, [followerId]
+  );
 }

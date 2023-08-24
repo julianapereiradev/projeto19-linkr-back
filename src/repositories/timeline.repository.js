@@ -16,15 +16,18 @@ export async function createPost(url, content, userId, hashtags) {
     }
 }
 
-export async function getPosts(limit, offset) {
-    const query = `SELECT posts.*, users."username", users."pictureUrl" 
-    FROM posts 
-    JOIN users ON users.id = posts."userId" 
-    ORDER BY "createdAt" DESC 
-    LIMIT $1
-    OFFSET $2;`
-    const result = await db.query(query, [limit, offset]);
-    return result.rows;
+export async function getPosts(limit, offset, users) {
+  const query = `
+    SELECT posts.*, users."username", users."pictureUrl" 
+      FROM posts
+      JOIN users ON users.id = posts."userId"
+      WHERE "userId" IN (${users})
+      ORDER BY "createdAt" DESC
+      LIMIT $1
+      OFFSET $2`;
+
+  const result = await db.query(query, [limit, offset]);
+  return result.rows;
 }
 
 
