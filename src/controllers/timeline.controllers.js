@@ -43,9 +43,11 @@ export async function publishLink(req, res) {
 // }
 
 export async function getAllPosts(req, res) {
+  const { offset } = req.query;
+
   try {
-    const limit = 20;
-    const posts = await getPosts(limit);
+    const limit = 10;
+    const posts = await getPosts(limit, offset);
     return res.send(posts);
   } catch (error) {
     alert("Houve um erro ao buscar os posts");
@@ -72,7 +74,6 @@ export async function getAllPostsByUserId(req, res){
     res.status(500).send(error)
   }
 }
-
 
 export async function like(req, res) {
   const userId = req.body.userId
