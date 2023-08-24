@@ -12,7 +12,6 @@ timelineRouter.get("/timeline", validationAuth, getAllPosts);
 timelineRouter.post("/like", validationAuth, like);
 timelineRouter.get("/like/:postId", validationAuth, getLikes)
 timelineRouter.put("/posts/:id", validationAuth, updatePosts);
-// timelineRouter.post("/timeline/user", validationAuth, getUserbyId);
 timelineRouter.get("/user/:id", validationAuth, getAllPostsByUserId);
 timelineRouter.delete("/posts/:id", validationAuth, deletePostById);
 
