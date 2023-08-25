@@ -137,3 +137,19 @@ export async function followUser(req, res) {
     res.status(500).send({ message: err })
   }
 }
+
+
+export async function getFollowingsByUserId(req, res) {
+  const { followerId } = req.params;
+  
+
+  try {
+      const { rows: followings } = await getFollowedUsersDB(followerId);
+ 
+      res.send(followings);
+
+  } catch (error) {
+      console.log(error.message);
+      res.sendStatus(500);
+  }
+}
