@@ -1,4 +1,4 @@
-import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB } from "../repositories/timeline.repository.js";
+import { createPost, deleteLike, getPostsByIdUserDB, insertLike, isLiked, selectLikesDB, updatePostsDB, userLikesDB, whoLikedDB, getPosts, selectPostByIdDB, deletePostByIdDB, checkRepostDB, postRespostDB, deleteRepostDB } from "../repositories/timeline.repository.js";
 // import { getUserByIdFromDb } from "../repositories/users.repositories.js";
 import { isFollowingDB, getFollowedUsersDB } from "../repositories/users.repositories.js";
 
@@ -49,12 +49,14 @@ export async function getAllPosts(req, res) {
 
   try {
     const followedUsers = await getFollowedUsersDB(userId);
-    let str = "";
+
+    let str = `${userId}, `;
     for (let i = 0; i < followedUsers.rows.length; i++) {
       str += followedUsers.rows[i].followingId;
       str += ", ";
     }
     str = str.slice(0, -2);
+    console.log("str " + str)
     
     const limit = 10;
     const posts = await getPosts(limit, offset, str);
@@ -79,6 +81,7 @@ export async function getAllPostsByUserId(req, res){
     }
 
     const formattedUserId = userIdQuery.rows;
+    console.log(formattedUserId)
 
     const checkIsFollowing = await isFollowingDB(followerId, id);
 
@@ -259,5 +262,23 @@ export async function deletePostById(req, res) {
   } catch (err) {
     console.error(err);
     res.status(500).send("Erro em deletePostById no backend");
+  }
+}
+
+export async function repost(req, res) {
+  const { userId, postId } = req.body;
+
+  try {
+    const checkRepost = await checkRepostDB(userId, postId);
+
+    if (checkRepost.rowCount === 0) {
+      await postRespostDB(userId, postId);
+    }
+    else {
+      await deleteRepostDB(userId, postId);
+    }
+
+  } catch (err) {
+    res.status(500).send(`Erro em repost no backend ${err}`);
   }
 }

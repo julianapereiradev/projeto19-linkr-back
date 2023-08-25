@@ -18,12 +18,12 @@ export async function createPost(url, content, userId, hashtags) {
 
 export async function getPosts(limit, offset, users) {
   const query = `
-    SELECT posts.*, users."username", users."pictureUrl" 
-      FROM posts
-      JOIN users ON users.id = posts."userId"
-      WHERE "userId" IN (${users})
-      ORDER BY "createdAt" DESC
-      LIMIT $1
+      SELECT posts.*, users."username", users."pictureUrl" 
+        FROM posts
+        JOIN users ON users.id = posts."userId"
+        WHERE "userId" IN (${users})
+        ORDER BY "createdAt" DESC
+        LIMIT $1
       OFFSET $2`;
 
   const result = await db.query(query, [limit, offset]);
@@ -32,7 +32,11 @@ export async function getPosts(limit, offset, users) {
 
 
 export async function getPostsByIdUserDB(userId) {
-  return await db.query(`SELECT users."username", users."pictureUrl", posts.* FROM users LEFT JOIN posts ON users.id = posts."userId" WHERE users.id =$1;`, [userId])
+  return await db.query(`
+    SELECT users."username", users."pictureUrl", posts.*
+      FROM users
+      LEFT JOIN posts ON users.id = posts."userId"
+      WHERE users.id=$1;`, [userId])
 }
 
 export async function isLiked(userId,postId){
@@ -103,4 +107,22 @@ export async function selectPostByIdDB(id) {
 
 export async function deletePostByIdDB(id) {   
   return await db.query(`DELETE FROM posts WHERE id=$1`, [id]);
+}
+
+export function checkRepostDB(userId, postId) {
+  return db.query(`
+    SELECT * FROM reposts WHERE "userId"=$1 AND "postId"=$2;` [userId, postId]
+  );
+}
+
+export function postRespostDB(userId, postId) {
+  return db.query(`
+    INSERT INTO reposts ("userId", "postId") VALUES ($1, $2);` [userId, postId]
+  )
+}
+
+export function deleteRepostDB(userId, postId) {
+  return db.query(`
+    DELETE FROM reposts WHERE "userId"=$1 AND "postId"=$2;` [userId, postId]
+  )
 }
