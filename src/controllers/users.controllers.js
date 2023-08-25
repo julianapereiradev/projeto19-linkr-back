@@ -87,6 +87,10 @@ export async function searchByName(req, res) {
     }
     str = str.slice(0, -2);
 
+    if (str != "") {
+      str = "ORDER BY (CASE WHEN users.id IN (${str}) THEN 1 ELSE 2 END)"
+    }
+
     const users = await searchByNameDB(name, str)
     return res.send(users.rows)
 

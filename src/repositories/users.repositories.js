@@ -34,11 +34,15 @@ export async function logoutDB(token) {
 }
 
 export async function searchByNameDB(name, str) {
-  return await db.query(`
+
+  const query = `
     SELECT id, users."username", "pictureUrl"
       FROM users
-      WHERE LOWER(username) LIKE LOWER($1)
-      ORDER BY (CASE WHEN id IN ($2) THEN 1 ELSE 2 END);`, [`%${name}%`, str]);
+      WHERE LOWER(username) LIKE LOWER($1) ${str}`
+
+      console.log(query);
+
+  return await db.query(query, [`%${name}%`]);
 }
 
 export async function getIdUserByToken(token){
